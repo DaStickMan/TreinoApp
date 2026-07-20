@@ -185,6 +185,10 @@ async function renderTreinoView() {
       const key = exKey(bloco, ex);
       const registradas = setsMapa[key] || {};
       const un = unidade(ex.tipoMedida);
+      const ehTempo = ex.tipoMedida === 'segundos';
+      const btnCrono = ehTempo
+        ? `<button class="btn-crono" data-seg="${ex.reps}">⏲ Cronometrar ${ex.reps}s</button>`
+        : '';
 
       // Um input por série prescrita. Placeholder = alvo (reps ou segundos).
       const seriesHtml = Array.from({ length: ex.series }, (_, i) => {
@@ -214,6 +218,7 @@ async function renderTreinoView() {
           ${alt}
           <div class="series">${seriesHtml}</div>
           <div class="ex-actions">
+            ${btnCrono}
             <button class="btn-rest" data-descanso="${ex.descanso_s}">⏱ Descanso ${ex.descanso_s}s</button>
           </div>
         </div>`;
@@ -278,7 +283,12 @@ async function renderTreinoView() {
 
   // Timer de descanso por exercício.
   $all('.btn-rest', el).forEach((btn) => {
-    btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.descanso)));
+    btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.descanso), { label: 'Descanso' }));
+  });
+
+  // Cronômetro para exercícios de tempo (hold). Ao terminar, sugere descanso.
+  $all('.btn-crono', el).forEach((btn) => {
+    btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.seg), { label: 'Exercício' }));
   });
 
   // Entrada no dia de teste.
@@ -736,36 +746,69 @@ function setTopbarPhase(text) {
   $('#topbar-phase').textContent = text || '';
 }
 
-// ---------- timer de descanso ----------
+// ---------- timer (descanso e exercícios de tempo) ----------
 const RestTimer = {
   remaining: 0,
   interval: null,
   el: null,
   timeEl: null,
+  labelEl: null,
+  audioCtx: null,
 
   _refs() {
     this.el = this.el || document.getElementById('rest-timer');
     this.timeEl = this.timeEl || document.getElementById('rest-time');
+    this.labelEl = this.labelEl || document.querySelector('#rest-timer .rest-label');
   },
   _fmt(s) {
     const m = Math.floor(s / 60);
     const r = s % 60;
     return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
   },
+  // Toca um beep (Web Audio). vol 0..1. Reaproveita o AudioContext.
+  _beep(freq, dur, vol) {
+    try {
+      if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = this.audioCtx;
+      if (ctx.state === 'suspended') ctx.resume();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'square'; // mais audível que senoide
+      o.frequency.value = freq;
+      o.connect(g); g.connect(ctx.destination);
+      const t = ctx.currentTime;
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.start(t);
+      o.stop(t + dur);
+    } catch (_) {}
+  },
+  _vibrar(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (_) {} },
+
   _paint() {
     this._refs();
     this.timeEl.textContent = this._fmt(Math.max(0, this.remaining));
-    this.timeEl.classList.toggle('ending', this.remaining <= 5 && this.remaining > 0);
+    this.timeEl.classList.toggle('ending', this.remaining <= 3 && this.remaining > 0);
   },
-  start(seconds) {
+  // seconds: duração; opts: { label, onEnd }
+  start(seconds, opts = {}) {
     this._refs();
+    this.onEnd = opts.onEnd || null;
+    this.labelEl.textContent = opts.label || 'Descanso';
     this.remaining = Math.max(1, seconds | 0);
     this.el.classList.remove('hidden');
+    // "destrava" o áudio no gesto do usuário (necessário no Android).
+    this._beep(0, 0.01, 0.0001);
     this._paint();
     clearInterval(this.interval);
     this.interval = setInterval(() => {
       this.remaining -= 1;
       this._paint();
+      // contagem sonora nos últimos 3 segundos (3, 2, 1)
+      if (this.remaining === 3 || this.remaining === 2 || this.remaining === 1) {
+        this._beep(880, 0.18, 0.5);
+        this._vibrar(120);
+      }
       if (this.remaining <= 0) this._finish();
     }, 1000);
   },
@@ -775,23 +818,19 @@ const RestTimer = {
   _finish() {
     clearInterval(this.interval);
     this.interval = null;
-    // feedback: vibração (se suportado) e beep curto via Web Audio.
-    try { if (navigator.vibrate) navigator.vibrate([200, 80, 200]); } catch (_) {}
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const o = ctx.createOscillator(); const g = ctx.createGain();
-      o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
-      g.gain.setValueAtTime(0.15, ctx.currentTime);
-      o.start();
-      o.stop(ctx.currentTime + 0.25);
-      setTimeout(() => ctx.close(), 400);
-    } catch (_) {}
-    toast('Descanso encerrado!');
+    // beep final: mais grave, mais longo e mais alto.
+    this._beep(1320, 0.15, 0.6);
+    setTimeout(() => this._beep(660, 0.55, 0.7), 120);
+    this._vibrar([300, 100, 300]);
+    const cb = this.onEnd; this.onEnd = null;
+    toast('Tempo encerrado!');
+    if (cb) { try { cb(); } catch (_) {} }
     setTimeout(() => this.stop(), 1200);
   },
   stop() {
     clearInterval(this.interval);
     this.interval = null;
+    this.onEnd = null;
     this._refs();
     if (this.el) this.el.classList.add('hidden');
   },

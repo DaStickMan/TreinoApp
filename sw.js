@@ -1,6 +1,6 @@
 // Service Worker — cache offline do app.
 // IMPORTANTE: bump CACHE_VERSION sempre que mudar arquivos do app.
-const CACHE_VERSION = 'treino-v6';
+const CACHE_VERSION = 'treino-v7';
 const CORE_ASSETS = [
   './',
   './index.html',
