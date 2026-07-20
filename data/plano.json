@@ -1,0 +1,625 @@
+{
+  "meta": {
+    "titulo": "Plano de Calistenia — 16 Semanas",
+    "subtitulo": "Hipertrofia + Força + Handstand + Muscle-up",
+    "descricao": "Rotação PPL contínua (A=Push, B=Pull, C=Legs), 5 dias/semana, limite de 60 min por sessão.",
+    "rotacao": ["A", "B", "C"],
+    "duracaoSemanas": 16,
+    "fonte": "plano-calistenia-16-semanas.md"
+  },
+  "videos": {
+    "kick-up": "https://www.youtube.com/results?search_query=handstand+kick+up+tutorial+shorts",
+    "handstand-costas-parede": "https://www.youtube.com/results?search_query=back+to+wall+handstand+shorts",
+    "toe-pulls": "https://www.youtube.com/results?search_query=handstand+toe+pulls+shorts",
+    "handstand-livre": "https://www.youtube.com/results?search_query=freestanding+handstand+tutorial+shorts",
+    "one-leg-kick-up": "https://www.youtube.com/results?search_query=one+leg+handstand+entry+shorts",
+    "wrist-prep": "https://www.youtube.com/results?search_query=wrist+warm+up+handstand+shorts",
+    "straight-bar-dip": "https://www.youtube.com/results?search_query=straight+bar+dips+shorts",
+    "dip-paralelas": "https://www.youtube.com/results?search_query=parallel+bar+dips+tutorial+shorts",
+    "decline-push-up": "https://www.youtube.com/results?search_query=decline+push+up+shorts",
+    "archer-push-up": "https://www.youtube.com/results?search_query=archer+push+up+shorts",
+    "pike-push-up": "https://www.youtube.com/results?search_query=pike+push+up+shorts",
+    "tricep-extensao-argolas": "https://www.youtube.com/results?search_query=ring+tricep+extension+shorts",
+    "tricep-pushdown": "https://www.youtube.com/results?search_query=tricep+pushdown+shorts",
+    "explosiva-peito-barra": "https://www.youtube.com/results?search_query=explosive+pull+up+chest+to+bar+shorts",
+    "transicao-barra-baixa": "https://www.youtube.com/results?search_query=muscle+up+low+bar+transition+drill+shorts",
+    "muscle-up-negativa": "https://www.youtube.com/results?search_query=muscle+up+negative+shorts",
+    "muscle-up-banda": "https://www.youtube.com/results?search_query=band+assisted+muscle+up+shorts",
+    "muscle-up-estrito": "https://www.youtube.com/results?search_query=strict+bar+muscle+up+tutorial+shorts",
+    "pull-up-estrita": "https://www.youtube.com/results?search_query=strict+pull+up+form+shorts",
+    "chest-to-bar": "https://www.youtube.com/results?search_query=chest+to+bar+pull+up+shorts",
+    "pull-up-pausa-topo": "https://www.youtube.com/results?search_query=pull+up+top+hold+shorts",
+    "pull-up-peso": "https://www.youtube.com/results?search_query=weighted+pull+up+shorts",
+    "remacao-australiana": "https://www.youtube.com/results?search_query=australian+row+inverted+row+shorts",
+    "face-pull": "https://www.youtube.com/results?search_query=band+face+pull+shorts",
+    "chin-up": "https://www.youtube.com/results?search_query=chin+up+shorts",
+    "hollow-hold": "https://www.youtube.com/results?search_query=hollow+body+hold+shorts",
+    "hollow-rock": "https://www.youtube.com/results?search_query=hollow+rock+shorts",
+    "hanging-leg-raise": "https://www.youtube.com/results?search_query=hanging+leg+raise+shorts",
+    "l-sit-tuck": "https://www.youtube.com/results?search_query=tuck+l+sit+shorts",
+    "l-sit": "https://www.youtube.com/results?search_query=l+sit+progression+shorts",
+    "toes-to-bar": "https://www.youtube.com/results?search_query=toes+to+bar+shorts",
+    "side-plank": "https://www.youtube.com/results?search_query=side+plank+shorts",
+    "dragon-flag": "https://www.youtube.com/results?search_query=dragon+flag+progression+shorts",
+    "ab-wheel": "https://www.youtube.com/results?search_query=ab+wheel+rollout+shorts",
+    "pallof-press": "https://www.youtube.com/results?search_query=pallof+press+shorts",
+    "bulgarian-split-squat": "https://www.youtube.com/results?search_query=bulgarian+split+squat+form+shorts",
+    "pistol-squat": "https://www.youtube.com/results?search_query=pistol+squat+tutorial+shorts",
+    "pistol-caixa": "https://www.youtube.com/results?search_query=box+pistol+squat+progression+shorts",
+    "nordic-curl": "https://www.youtube.com/results?search_query=nordic+hamstring+curl+shorts",
+    "panturrilha-1-perna": "https://www.youtube.com/results?search_query=single+leg+calf+raise+shorts",
+    "ponte-gluteo-1-perna": "https://www.youtube.com/results?search_query=single+leg+glute+bridge+shorts"
+  },
+  "aquecimentos": {
+    "geral": [
+      { "nome": "Corrida no lugar / polichinelo", "prescricao": "2 séries de 30 s", "descanso_s": 15 },
+      { "nome": "Círculos de ombro para trás", "prescricao": "1 série de 20 reps" },
+      { "nome": "Rotação de punho (4 apoios, transferindo peso)", "prescricao": "1 série de 30 s" },
+      { "nome": "Cat-camel (mobilidade de coluna)", "prescricao": "1 série de 10 reps" }
+    ],
+    "A": [
+      { "nome": "Scapular push-up", "prescricao": "2 × 10" },
+      { "nome": "Band pull-apart (ou Y-T-W no chão 2×8 cada)", "prescricao": "2 × 8" },
+      { "nome": "Flexões lentas (3 s na descida)", "prescricao": "3 reps" }
+    ],
+    "B": [
+      { "nome": "Scapular pull (só depressão de escápula)", "prescricao": "2 × 8" },
+      { "nome": "Dead hang", "prescricao": "1 × 20 s" },
+      { "nome": "Pull-ups lentas (aquecimento, RIR alto)", "prescricao": "3 reps" }
+    ],
+    "C": [
+      { "nome": "Agachamento profundo peso corporal", "prescricao": "2 × 10" },
+      { "nome": "Leg swing frontal", "prescricao": "1 × 12/perna" },
+      { "nome": "Leg swing lateral", "prescricao": "1 × 12/perna" },
+      { "nome": "Panturrilha no degrau", "prescricao": "5/perna" }
+    ],
+    "teste": [
+      { "nome": "Corrida no lugar", "prescricao": "2 × 30 s", "descanso_s": 15 },
+      { "nome": "Círculos de ombro + rotação de punho", "prescricao": "1 × 30 s cada" },
+      { "nome": "Dead hang", "prescricao": "1 × 20 s" },
+      { "nome": "Ativação: 3 pull-ups + 3 dips + 5 agachamentos (RIR alto)", "prescricao": "1 série" },
+      { "nome": "Kick-up de handstand contra parede/espaldar", "prescricao": "1 rep" },
+      { "nome": "Descanso antes do 1º teste", "prescricao": "3 min" }
+    ]
+  },
+  "fases": [
+    {
+      "id": 1,
+      "nome": "Base técnica",
+      "semanas": [1, 2, 3, 4],
+      "rir": 3,
+      "treinosParaTeste": 20,
+      "testeId": 1,
+      "objetivo": "Fixar padrão de execução, criar base de straight-bar dip e explosiva peito-na-barra, converter 60 s de parede em toe pulls consistentes. Volume moderado, longe da falha (RIR 3).",
+      "treinos": [
+        {
+          "tipo": "A",
+          "nome": "Push",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Kick-up contra o espaldar", "prescricao": "5 tentativas", "series": 5, "reps": 1, "tipoMedida": "reps", "descanso_s": 60, "video": "kick-up" },
+                { "ordem": 2, "nome": "Handstand de costas para espaldar/parede (calcanhares em contato)", "prescricao": "5 × 30 s", "series": 5, "reps": 30, "tipoMedida": "segundos", "descanso_s": 60, "video": "handstand-costas-parede", "alternativa": "Handstand nas paralelas em tuck apoiando quadril, 5×15 s." }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (anti-extensão)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Hollow hold", "prescricao": "3 × 30 s", "series": 3, "reps": 30, "tipoMedida": "segundos", "descanso_s": 45, "video": "hollow-hold" },
+                { "ordem": 2, "nome": "Hollow rock", "prescricao": "2 × 15", "series": 2, "reps": 15, "tipoMedida": "reps", "descanso_s": 45, "video": "hollow-rock" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 3)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Straight-bar dip (peito sobre a barra, cotovelo 90°)", "prescricao": "4 × 6", "series": 4, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "straight-bar-dip" },
+                { "ordem": 2, "nome": "Dip em paralelas (cotovelo 90°, extensão completa)", "prescricao": "3 × 8", "series": 3, "reps": 8, "tipoMedida": "reps", "descanso_s": 120, "video": "dip-paralelas" },
+                { "ordem": 3, "nome": "Decline push-up (pés no espaldar/caixa 40 cm)", "prescricao": "3 × 12", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 90, "video": "decline-push-up" },
+                { "ordem": 4, "nome": "Pike push-up (quadril alto)", "prescricao": "3 × 10", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 90, "video": "pike-push-up" },
+                { "ordem": 5, "nome": "Extensão de tríceps em argolas/banda", "prescricao": "3 × 12", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 60, "video": "tricep-extensao-argolas" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "B",
+          "nome": "Pull",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Muscle-up)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up explosiva peito-na-barra", "prescricao": "5 × 3", "series": 5, "reps": 3, "tipoMedida": "reps", "descanso_s": 90, "video": "explosiva-peito-barra" },
+                { "ordem": 2, "nome": "Transição em barra baixa (altura do quadril)", "prescricao": "4 × 4", "series": 4, "reps": 4, "tipoMedida": "reps", "descanso_s": 90, "video": "transicao-barra-baixa", "alternativa": "Transição nas paralelas partindo do apoio, 4×4." }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (flexão de quadril pendurado)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Hanging leg raise com pausa 2 s a 90°", "prescricao": "3 × 10", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 60, "video": "hanging-leg-raise" },
+                { "ordem": 2, "nome": "L-sit tuck na barra/paralelas", "prescricao": "3 × 15 s", "series": 3, "reps": 15, "tipoMedida": "segundos", "descanso_s": 60, "video": "l-sit-tuck" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 3)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up pronada livre (dead hang, queixo acima)", "prescricao": "4 × 8", "series": 4, "reps": 8, "tipoMedida": "reps", "descanso_s": 120, "video": "pull-up-estrita" },
+                { "ordem": 2, "nome": "Chest-to-bar pull-up", "prescricao": "3 × 5", "series": 3, "reps": 5, "tipoMedida": "reps", "descanso_s": 120, "video": "chest-to-bar" },
+                { "ordem": 3, "nome": "Remação australiana (barra baixa, peito à barra)", "prescricao": "3 × 12", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 90, "video": "remacao-australiana" },
+                { "ordem": 4, "nome": "Face pull em banda/argolas", "prescricao": "3 × 15", "series": 3, "reps": 15, "tipoMedida": "reps", "descanso_s": 60, "video": "face-pull" },
+                { "ordem": 5, "nome": "Rosca de bíceps em barra baixa (chin-up hold supinado, 3 s subida)", "prescricao": "3 × 8", "series": 3, "reps": 8, "tipoMedida": "reps", "descanso_s": 60, "video": "chin-up" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "C",
+          "nome": "Legs",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand equilíbrio)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Toe pulls (retirar os 2 pés 1–3 s)", "prescricao": "5 × 5", "series": 5, "reps": 5, "tipoMedida": "reps", "descanso_s": 60, "video": "toe-pulls", "alternativa": "Nas paralelas, tuck e retirar o quadril do apoio 1–3 s, 5×5." },
+                { "ordem": 2, "nome": "Wrist prep + hold de descarga", "prescricao": "1 × 30 s", "series": 1, "reps": 30, "tipoMedida": "segundos", "descanso_s": 0, "video": "wrist-prep" }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (rotação/anti-rotação)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Side plank", "prescricao": "3 × 30 s/lado", "series": 3, "reps": 30, "tipoMedida": "segundos", "descanso_s": 30, "video": "side-plank" },
+                { "ordem": 2, "nome": "Dragon flag negativa (5 s descida)", "prescricao": "3 × 5", "series": 3, "reps": 5, "tipoMedida": "reps", "descanso_s": 60, "video": "dragon-flag" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 3)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Bulgarian split squat com 2×5 kg (tornozeleiras)", "prescricao": "4 × 10/perna", "series": 4, "reps": 10, "tipoMedida": "reps", "descanso_s": 120, "video": "bulgarian-split-squat" },
+                { "ordem": 2, "nome": "Pistol para caixa de 45 cm (assistência na barra/argola)", "prescricao": "3 × 6/perna", "series": 3, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "pistol-caixa" },
+                { "ordem": 3, "nome": "Nordic curl negativo (5 s descida)", "prescricao": "3 × 5", "series": 3, "reps": 5, "tipoMedida": "reps", "descanso_s": 90, "video": "nordic-curl" },
+                { "ordem": 4, "nome": "Elevação de panturrilha 1 perna no degrau", "prescricao": "4 × 15/perna", "series": 4, "reps": 15, "tipoMedida": "reps", "descanso_s": 60, "video": "panturrilha-1-perna" },
+                { "ordem": 5, "nome": "Ponte de glúteo 1 perna (pausa 1 s topo)", "prescricao": "3 × 12/perna", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 60, "video": "ponte-gluteo-1-perna" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nome": "Volume",
+      "semanas": [5, 6, 7, 8],
+      "rir": 2,
+      "treinosParaTeste": 20,
+      "testeId": 2,
+      "objetivo": "Aumentar volume total (mais séries), liberar tentativas de handstand livre, progredir explosiva e transição. RIR 2 (mais perto da falha que a Fase 1).",
+      "treinos": [
+        {
+          "tipo": "A",
+          "nome": "Push",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Kick-up para handstand livre com saída segura", "prescricao": "6 tentativas", "series": 6, "reps": 1, "tipoMedida": "reps", "descanso_s": 60, "video": "kick-up" },
+                { "ordem": 2, "nome": "Handstand livre (espaldar 30 cm atrás como rede)", "prescricao": "5 tentativas até 12 s", "series": 5, "reps": 12, "tipoMedida": "segundos", "descanso_s": 75, "video": "handstand-livre", "alternativa": "Entrada nas paralelas em tuck, buscar 3 s de equilíbrio, 5 tentativas." }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (anti-extensão)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Hollow hold braços estendidos", "prescricao": "3 × 40 s", "series": 3, "reps": 40, "tipoMedida": "segundos", "descanso_s": 45, "video": "hollow-hold" },
+                { "ordem": 2, "nome": "Ab wheel / rollout em barra (joelhos)", "prescricao": "3 × 10", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 45, "video": "ab-wheel" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 2)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Straight-bar dip", "prescricao": "5 × 6", "series": 5, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "straight-bar-dip" },
+                { "ordem": 2, "nome": "Dip em paralelas com pausa 1 s embaixo", "prescricao": "4 × 8", "series": 4, "reps": 8, "tipoMedida": "reps", "descanso_s": 120, "video": "dip-paralelas" },
+                { "ordem": 3, "nome": "Archer push-up", "prescricao": "3 × 8/lado", "series": 3, "reps": 8, "tipoMedida": "reps", "descanso_s": 90, "video": "archer-push-up" },
+                { "ordem": 4, "nome": "Pike push-up pés elevados (caixa 40 cm)", "prescricao": "3 × 10", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 90, "video": "pike-push-up" },
+                { "ordem": 5, "nome": "Extensão de tríceps em argolas/banda", "prescricao": "3 × 15", "series": 3, "reps": 15, "tipoMedida": "reps", "descanso_s": 60, "video": "tricep-extensao-argolas" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "B",
+          "nome": "Pull",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Muscle-up)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up explosiva peito-na-barra", "prescricao": "6 × 3", "series": 6, "reps": 3, "tipoMedida": "reps", "descanso_s": 90, "video": "explosiva-peito-barra" },
+                { "ordem": 2, "nome": "Negativa de muscle-up de 5 s", "prescricao": "4 × 3", "series": 4, "reps": 3, "tipoMedida": "reps", "descanso_s": 120, "video": "muscle-up-negativa", "alternativa": "Pé no espaldar/caixa se não sustentar 5 s." }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (flexão de quadril pendurado)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Hanging leg raise com pausa 2 s a 90°", "prescricao": "3 × 12", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 60, "video": "hanging-leg-raise" },
+                { "ordem": 2, "nome": "L-sit uma perna estendida (alternar)", "prescricao": "3 × 15 s", "series": 3, "reps": 15, "tipoMedida": "segundos", "descanso_s": 60, "video": "l-sit" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 2)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up pronada livre", "prescricao": "5 × 8", "series": 5, "reps": 8, "tipoMedida": "reps", "descanso_s": 120, "video": "pull-up-estrita" },
+                { "ordem": 2, "nome": "Chest-to-bar pull-up", "prescricao": "4 × 6", "series": 4, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "chest-to-bar" },
+                { "ordem": 3, "nome": "Pull-up com pausa 2 s no topo", "prescricao": "3 × 6", "series": 3, "reps": 6, "tipoMedida": "reps", "descanso_s": 90, "video": "pull-up-pausa-topo" },
+                { "ordem": 4, "nome": "Remação australiana pés elevados (caixa 40 cm)", "prescricao": "3 × 12", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 90, "video": "remacao-australiana" },
+                { "ordem": 5, "nome": "Chin-up supinado 3 s subida", "prescricao": "3 × 8", "series": 3, "reps": 8, "tipoMedida": "reps", "descanso_s": 60, "video": "chin-up" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "C",
+          "nome": "Legs",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand equilíbrio)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Toe pulls com 3 s de sustentação fora da parede", "prescricao": "5 × 5", "series": 5, "reps": 5, "tipoMedida": "reps", "descanso_s": 60, "video": "toe-pulls" },
+                { "ordem": 2, "nome": "Tentativa de handstand livre a partir do toe pull", "prescricao": "5 tentativas", "series": 5, "reps": 1, "tipoMedida": "reps", "descanso_s": 75, "video": "handstand-livre" }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (rotação/anti-rotação)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Dragon flag negativa 5 s", "prescricao": "3 × 6", "series": 3, "reps": 6, "tipoMedida": "reps", "descanso_s": 60, "video": "dragon-flag" },
+                { "ordem": 2, "nome": "Pallof press em banda (ou cabo leve)", "prescricao": "3 × 12/lado", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 30, "video": "pallof-press" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 2)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Bulgarian split squat com 2×5 kg", "prescricao": "5 × 10/perna", "series": 5, "reps": 10, "tipoMedida": "reps", "descanso_s": 120, "video": "bulgarian-split-squat" },
+                { "ordem": 2, "nome": "Pistol para caixa de 35 cm (assistência mínima na barra)", "prescricao": "4 × 6/perna", "series": 4, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "pistol-caixa" },
+                { "ordem": 3, "nome": "Nordic curl negativo 5 s", "prescricao": "3 × 6", "series": 3, "reps": 6, "tipoMedida": "reps", "descanso_s": 90, "video": "nordic-curl" },
+                { "ordem": 4, "nome": "Elevação de panturrilha 1 perna no degrau", "prescricao": "4 × 18/perna", "series": 4, "reps": 18, "tipoMedida": "reps", "descanso_s": 60, "video": "panturrilha-1-perna" },
+                { "ordem": 5, "nome": "Ponte de glúteo 1 perna pausa 2 s", "prescricao": "3 × 12/perna", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 60, "video": "ponte-gluteo-1-perna" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "Intensidade / especificidade",
+      "semanas": [9, 10, 11, 12],
+      "rir": 1,
+      "treinosParaTeste": 20,
+      "testeId": 3,
+      "objetivo": "Especificidade máxima para muscle-up e handstand livre. Introduz muscle-up com elástico e tentativas de handstand livre cronometradas. Reps mais baixas, esforço alto (RIR 1). Volume acessório reduzido para caber em 60 min e preservar recuperação.",
+      "treinos": [
+        {
+          "tipo": "A",
+          "nome": "Push",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Kick-up para handstand livre", "prescricao": "6 tentativas", "series": 6, "reps": 1, "tipoMedida": "reps", "descanso_s": 60, "video": "kick-up" },
+                { "ordem": 2, "nome": "Handstand livre cronometrado (saída por cartwheel)", "prescricao": "6 tentativas até 15 s", "series": 6, "reps": 15, "tipoMedida": "segundos", "descanso_s": 75, "video": "handstand-livre", "alternativa": "Mesmo em campo aberto com saída lateral treinada." }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (anti-extensão)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Hollow hold braços estendidos", "prescricao": "3 × 45 s", "series": 3, "reps": 45, "tipoMedida": "segundos", "descanso_s": 45, "video": "hollow-hold" },
+                { "ordem": 2, "nome": "Rollout em barra em pé parcial (ou ab wheel joelhos)", "prescricao": "3 × 8", "series": 3, "reps": 8, "tipoMedida": "reps", "descanso_s": 45, "video": "ab-wheel" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 1)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Straight-bar dip com pausa 1 s no fundo", "prescricao": "5 × 5", "series": 5, "reps": 5, "tipoMedida": "reps", "descanso_s": 150, "video": "straight-bar-dip" },
+                { "ordem": 2, "nome": "Dip em paralelas com colete/tornozeleiras 10 kg", "prescricao": "4 × 6", "series": 4, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "dip-paralelas" },
+                { "ordem": 3, "nome": "Archer push-up", "prescricao": "3 × 8/lado", "series": 3, "reps": 8, "tipoMedida": "reps", "descanso_s": 90, "video": "archer-push-up" },
+                { "ordem": 4, "nome": "Pike push-up pés elevados (caixa 40 cm)", "prescricao": "3 × 10", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 90, "video": "pike-push-up" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "B",
+          "nome": "Pull",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Muscle-up)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up explosiva peito-na-barra (máxima altura)", "prescricao": "5 × 2", "series": 5, "reps": 2, "tipoMedida": "reps", "descanso_s": 90, "video": "explosiva-peito-barra" },
+                { "ordem": 2, "nome": "Muscle-up com elástico (pull+transição+dip)", "prescricao": "5 × 3", "series": 5, "reps": 3, "tipoMedida": "reps", "descanso_s": 120, "video": "muscle-up-banda" },
+                { "ordem": 3, "nome": "Negativa de muscle-up de 5 s (sem banda)", "prescricao": "3 × 2", "series": 3, "reps": 2, "tipoMedida": "reps", "descanso_s": 120, "video": "muscle-up-negativa" }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (flexão de quadril pendurado)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Toes-to-bar parcial", "prescricao": "3 × 10", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 60, "video": "toes-to-bar" },
+                { "ordem": 2, "nome": "L-sit estendido (pernas retas)", "prescricao": "3 × 12 s", "series": 3, "reps": 12, "tipoMedida": "segundos", "descanso_s": 60, "video": "l-sit" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 1)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up com colete/tornozeleiras 10 kg", "prescricao": "5 × 5", "series": 5, "reps": 5, "tipoMedida": "reps", "descanso_s": 150, "video": "pull-up-peso" },
+                { "ordem": 2, "nome": "Chest-to-bar pull-up", "prescricao": "4 × 5", "series": 4, "reps": 5, "tipoMedida": "reps", "descanso_s": 120, "video": "chest-to-bar" },
+                { "ordem": 3, "nome": "Pull-up explosiva com puxada máxima (acima do peito)", "prescricao": "4 × 3", "series": 4, "reps": 3, "tipoMedida": "reps", "descanso_s": 120, "video": "explosiva-peito-barra" },
+                { "ordem": 4, "nome": "Remação australiana pés elevados com pausa 1 s", "prescricao": "3 × 10", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 90, "video": "remacao-australiana" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "C",
+          "nome": "Legs",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand equilíbrio)",
+              "duracao_min": 12,
+              "exercicios": [
+                { "ordem": 1, "nome": "Entrada com uma perna (one-leg kick-up) buscando equilíbrio", "prescricao": "6 tentativas", "series": 6, "reps": 1, "tipoMedida": "reps", "descanso_s": 60, "video": "one-leg-kick-up" },
+                { "ordem": 2, "nome": "Handstand livre cronometrado", "prescricao": "5 tentativas até 10 s", "series": 5, "reps": 10, "tipoMedida": "segundos", "descanso_s": 75, "video": "handstand-livre" }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core (rotação/anti-rotação)",
+              "duracao_min": 8,
+              "exercicios": [
+                { "ordem": 1, "nome": "Dragon flag completa (corpo reto)", "prescricao": "3 × 4", "series": 3, "reps": 4, "tipoMedida": "reps", "descanso_s": 75, "video": "dragon-flag" },
+                { "ordem": 2, "nome": "Pallof press em banda", "prescricao": "3 × 12/lado", "series": 3, "reps": 12, "tipoMedida": "reps", "descanso_s": 30, "video": "pallof-press" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 1)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pistol squat completo (assistência leve só se necessário)", "prescricao": "5 × 5/perna", "series": 5, "reps": 5, "tipoMedida": "reps", "descanso_s": 150, "video": "pistol-squat" },
+                { "ordem": 2, "nome": "Bulgarian split squat com 2×5 kg pausa 2 s no fundo", "prescricao": "4 × 10/perna", "series": 4, "reps": 10, "tipoMedida": "reps", "descanso_s": 120, "video": "bulgarian-split-squat" },
+                { "ordem": 3, "nome": "Nordic curl (amplitude máxima controlada)", "prescricao": "4 × 5", "series": 4, "reps": 5, "tipoMedida": "reps", "descanso_s": 120, "video": "nordic-curl" },
+                { "ordem": 4, "nome": "Elevação de panturrilha 1 perna pausa 1 s no topo", "prescricao": "4 × 15/perna", "series": 4, "reps": 15, "tipoMedida": "reps", "descanso_s": 60, "video": "panturrilha-1-perna" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "nome": "Teste, deload e ajuste",
+      "semanas": [13, 14, 15, 16],
+      "rir": 4,
+      "treinosParaTeste": 20,
+      "testeId": 4,
+      "objetivo": "Reduzir fadiga acumulada (deload) nas semanas 13–15 para chegar descansado ao teste final na semana 16. Volume e proximidade da falha reduzidos (RIR 4). Skill mantido em baixa dose.",
+      "treinos": [
+        {
+          "tipo": "A",
+          "nome": "Push",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand)",
+              "duracao_min": 10,
+              "exercicios": [
+                { "ordem": 1, "nome": "Kick-up para handstand livre (técnico)", "prescricao": "4 tentativas", "series": 4, "reps": 1, "tipoMedida": "reps", "descanso_s": 60, "video": "kick-up" },
+                { "ordem": 2, "nome": "Handstand livre cronometrado leve", "prescricao": "3 tentativas até 10 s", "series": 3, "reps": 10, "tipoMedida": "segundos", "descanso_s": 75, "video": "handstand-livre" }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core",
+              "duracao_min": 6,
+              "exercicios": [
+                { "ordem": 1, "nome": "Hollow hold", "prescricao": "2 × 30 s", "series": 2, "reps": 30, "tipoMedida": "segundos", "descanso_s": 45, "video": "hollow-hold" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 4)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Straight-bar dip (sem carga extra)", "prescricao": "3 × 6", "series": 3, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "straight-bar-dip" },
+                { "ordem": 2, "nome": "Dip em paralelas", "prescricao": "3 × 8", "series": 3, "reps": 8, "tipoMedida": "reps", "descanso_s": 90, "video": "dip-paralelas" },
+                { "ordem": 3, "nome": "Decline push-up (pés caixa 40 cm)", "prescricao": "2 × 12", "series": 2, "reps": 12, "tipoMedida": "reps", "descanso_s": 90, "video": "decline-push-up" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "B",
+          "nome": "Pull",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Muscle-up)",
+              "duracao_min": 10,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up explosiva peito-na-barra (técnica)", "prescricao": "4 × 2", "series": 4, "reps": 2, "tipoMedida": "reps", "descanso_s": 90, "video": "explosiva-peito-barra" },
+                { "ordem": 2, "nome": "Negativa de muscle-up 5 s", "prescricao": "2 × 2", "series": 2, "reps": 2, "tipoMedida": "reps", "descanso_s": 120, "video": "muscle-up-negativa" }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core",
+              "duracao_min": 6,
+              "exercicios": [
+                { "ordem": 1, "nome": "Hanging leg raise pausa 2 s a 90°", "prescricao": "2 × 10", "series": 2, "reps": 10, "tipoMedida": "reps", "descanso_s": 60, "video": "hanging-leg-raise" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 4)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Pull-up pronada livre (sem carga extra)", "prescricao": "3 × 6", "series": 3, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "pull-up-estrita" },
+                { "ordem": 2, "nome": "Chest-to-bar pull-up", "prescricao": "2 × 4", "series": 2, "reps": 4, "tipoMedida": "reps", "descanso_s": 120, "video": "chest-to-bar" },
+                { "ordem": 3, "nome": "Remação australiana", "prescricao": "2 × 12", "series": 2, "reps": 12, "tipoMedida": "reps", "descanso_s": 90, "video": "remacao-australiana" }
+              ]
+            }
+          ]
+        },
+        {
+          "tipo": "C",
+          "nome": "Legs",
+          "blocos": [
+            {
+              "tipo": "skill",
+              "titulo": "Skill (Handstand equilíbrio)",
+              "duracao_min": 10,
+              "exercicios": [
+                { "ordem": 1, "nome": "Toe pulls", "prescricao": "3 × 5", "series": 3, "reps": 5, "tipoMedida": "reps", "descanso_s": 60, "video": "toe-pulls" },
+                { "ordem": 2, "nome": "Tentativa de handstand livre leve", "prescricao": "3 tentativas", "series": 3, "reps": 1, "tipoMedida": "reps", "descanso_s": 75, "video": "handstand-livre" }
+              ]
+            },
+            {
+              "tipo": "core",
+              "titulo": "Core",
+              "duracao_min": 6,
+              "exercicios": [
+                { "ordem": 1, "nome": "Dragon flag negativa 5 s", "prescricao": "2 × 5", "series": 2, "reps": 5, "tipoMedida": "reps", "descanso_s": 60, "video": "dragon-flag" }
+              ]
+            },
+            {
+              "tipo": "forca",
+              "titulo": "Força (RIR 4)",
+              "duracao_min": 30,
+              "exercicios": [
+                { "ordem": 1, "nome": "Bulgarian split squat com 2×5 kg", "prescricao": "3 × 10/perna", "series": 3, "reps": 10, "tipoMedida": "reps", "descanso_s": 120, "video": "bulgarian-split-squat" },
+                { "ordem": 2, "nome": "Pistol para caixa de 45 cm", "prescricao": "2 × 6/perna", "series": 2, "reps": 6, "tipoMedida": "reps", "descanso_s": 120, "video": "pistol-caixa" },
+                { "ordem": 3, "nome": "Elevação de panturrilha 1 perna no degrau", "prescricao": "3 × 15/perna", "series": 3, "reps": 15, "tipoMedida": "reps", "descanso_s": 60, "video": "panturrilha-1-perna" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "testes": [
+    {
+      "id": 1,
+      "nome": "Teste 1 — Passar da Fase 1 para a Fase 2",
+      "semana": 4,
+      "faseDe": 1,
+      "fasePara": 2,
+      "regra": "Passar em TODOS os itens para avançar. Se falhar em qualquer item: repetir a semana focando os reprovados.",
+      "itens": [
+        { "ordem": 1, "nome": "Pull-up pronada estrita", "protocolo": "1 série máxima (dead hang, sem kipping, queixo acima, descida completa). Descanso após: 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 12, "criterioTexto": "12 reps" },
+        { "ordem": 2, "nome": "Straight-bar dip", "protocolo": "1 série máxima. Descanso após: 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 8, "criterioTexto": "8 reps" },
+        { "ordem": 3, "nome": "Dip em paralelas", "protocolo": "1 série máxima. Descanso após: 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 12, "criterioTexto": "12 reps" },
+        { "ordem": 4, "nome": "Pull-up explosiva", "protocolo": "3 tentativas de 1 rep, descanso 2 min entre tentativas.", "tipoMedida": "manual", "criterioTexto": "Alcançar o peito baixo na barra em pelo menos 1 tentativa (acima do pescoço inicial)." },
+        { "ordem": 5, "nome": "Toe pull (retirar os 2 pés)", "protocolo": "3 tentativas, descanso 90 s.", "tipoMedida": "manual", "criterioTexto": "Sustentar 3 s sem os pés em 1 tentativa." },
+        { "ordem": 6, "nome": "Hanging leg raise com pausa 2 s a 90°", "protocolo": "1 série. Descanso após: 2 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 10, "criterioTexto": "10 reps" },
+        { "ordem": 7, "nome": "Bulgarian split squat com 2×5 kg", "protocolo": "1 série de 10/perna.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 10, "criterioTexto": "10 em cada perna" }
+      ]
+    },
+    {
+      "id": 2,
+      "nome": "Teste 2 — Passar da Fase 2 para a Fase 3",
+      "semana": 8,
+      "faseDe": 2,
+      "fasePara": 3,
+      "regra": "Passar em TODOS os itens para avançar. Se falhar: repetir a semana focando os reprovados.",
+      "itens": [
+        { "ordem": 1, "nome": "Pull-up pronada estrita", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 14, "criterioTexto": "14 reps" },
+        { "ordem": 2, "nome": "Chest-to-bar pull-up", "protocolo": "1 série máxima (peito toca a barra). Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 6, "criterioTexto": "6 reps" },
+        { "ordem": 3, "nome": "Straight-bar dip", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 12, "criterioTexto": "12 reps" },
+        { "ordem": 4, "nome": "Pull-up explosiva", "protocolo": "3 tentativas de 1 rep, descanso 2 min.", "tipoMedida": "manual", "criterioTexto": "Peito toca a barra em pelo menos 1 tentativa." },
+        { "ordem": 5, "nome": "Negativa de muscle-up de 5 s (sem assistência)", "protocolo": "3 tentativas, descanso 2 min.", "tipoMedida": "manual", "criterioTexto": "1 negativa com 5 s controlada, passando pela transição sem queda." },
+        { "ordem": 6, "nome": "Handstand livre", "protocolo": "5 tentativas, descanso 90 s.", "tipoMedida": "manual", "criterioTexto": "3 s sem contato em pelo menos 1 tentativa." },
+        { "ordem": 7, "nome": "Hanging leg raise pausa 2 s a 90°", "protocolo": "1 série.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 12, "criterioTexto": "12 reps" },
+        { "ordem": 8, "nome": "Pistol para caixa de 35 cm", "protocolo": "1 série de 6/perna.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 6, "criterioTexto": "6 em cada perna" }
+      ]
+    },
+    {
+      "id": 3,
+      "nome": "Teste 3 — Passar da Fase 3 para a Fase 4",
+      "semana": 12,
+      "faseDe": 3,
+      "fasePara": 4,
+      "regra": "SEMPRE avançar para a Fase 4 (deload obrigatório). Itens reprovados viram foco prioritário da Fase 4.",
+      "itens": [
+        { "ordem": 1, "nome": "Pull-up com 10 kg", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 5, "criterioTexto": "5 reps" },
+        { "ordem": 2, "nome": "Chest-to-bar pull-up", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 8, "criterioTexto": "8 reps" },
+        { "ordem": 3, "nome": "Straight-bar dip com 10 kg", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 6, "criterioTexto": "6 reps" },
+        { "ordem": 4, "nome": "Muscle-up com banda fina", "protocolo": "3 tentativas, descanso 2 min.", "tipoMedida": "manual", "criterioTexto": "1 muscle-up completo com banda fina (pull + transição + dip)." },
+        { "ordem": 5, "nome": "Negativa de muscle-up 5 s sem assistência", "protocolo": "3 tentativas, descanso 2 min.", "tipoMedida": "manual", "criterioTexto": "2 negativas limpas de 5 s." },
+        { "ordem": 6, "nome": "Handstand livre cronometrado", "protocolo": "5 tentativas, descanso 90 s.", "tipoMedida": "segundos", "criterio": ">=", "criterioValor": 5, "criterioTexto": "5 s sem contato em pelo menos 1 tentativa" },
+        { "ordem": 7, "nome": "Dragon flag completa", "protocolo": "1 série máxima.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 4, "criterioTexto": "4 reps com corpo reto" },
+        { "ordem": 8, "nome": "Pistol squat completo", "protocolo": "1 série de 5/perna.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 5, "criterioTexto": "5 em cada perna sem apoio" }
+      ]
+    },
+    {
+      "id": 4,
+      "nome": "Teste Final — Semana 16",
+      "semana": 16,
+      "faseDe": 4,
+      "fasePara": null,
+      "regra": "Teste final: define o próximo ciclo. Metas (não bloqueiam avanço).",
+      "itens": [
+        { "ordem": 1, "nome": "Pull-up pronada estrita", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 15, "criterioTexto": "Meta = 15 reps" },
+        { "ordem": 2, "nome": "Chest-to-bar pull-up", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 8, "criterioTexto": "Meta = 8 reps" },
+        { "ordem": 3, "nome": "Straight-bar dip", "protocolo": "1 série máxima. Descanso 3 min.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 15, "criterioTexto": "Meta = 15 reps" },
+        { "ordem": 4, "nome": "Pull-up explosiva", "protocolo": "3 tentativas de 1 rep, descanso 2 min.", "tipoMedida": "manual", "criterioTexto": "Meta = peito toca a barra em 2 das 3 tentativas." },
+        { "ordem": 5, "nome": "Muscle-up", "protocolo": "Primeiro estrito (3 tentativas, descanso 3 min); se falhar, banda fina (3 tentativas, 2 min); se falhar, negativa 5 s (3 tentativas).", "tipoMedida": "manual", "criterioTexto": "Meta ideal = 1 muscle-up estrito. Mínima = 1 com banda fina OU 1 negativa 5 s." },
+        { "ordem": 6, "nome": "Handstand livre cronometrado", "protocolo": "5 tentativas, descanso 90 s.", "tipoMedida": "segundos", "criterio": ">=", "criterioValor": 5, "criterioTexto": "Mínima = 5 s sem contato. Ideal = 10 s." },
+        { "ordem": 7, "nome": "Hanging leg raise pausa 1 s no topo", "protocolo": "3 séries de 12 reps, descanso 60 s.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 12, "criterioTexto": "Meta = 3×12 com pausa de 1 s" },
+        { "ordem": 8, "nome": "Pistol squat completo", "protocolo": "1 série máxima/perna.", "tipoMedida": "reps", "criterio": ">=", "criterioValor": 8, "criterioTexto": "Meta = 8/perna" }
+      ]
+    }
+  ]
+}
