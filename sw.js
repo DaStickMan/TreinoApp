@@ -1,6 +1,6 @@
-// Service Worker — cache offline do app.
+// Service Worker — cache offline do app + notificações.
 // IMPORTANTE: bump CACHE_VERSION sempre que mudar arquivos do app.
-const CACHE_VERSION = 'treino-v7';
+const CACHE_VERSION = 'treino-v8';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -63,6 +63,44 @@ self.addEventListener('fetch', (event) => {
           if (req.mode === 'navigate') return caches.match('./index.html');
           return new Response('', { status: 504, statusText: 'Offline' });
         });
+    })
+  );
+});
+
+// ---------- Notificações ----------
+
+// Recebe mensagem da página para exibir notificação mesmo em background.
+self.addEventListener('message', (event) => {
+  const data = event.data;
+  if (!data || data.type !== 'TIMER_END') return;
+
+  self.registration.showNotification(data.title || 'Treino', {
+    body: data.body || '',
+    icon: './icons/icon-192.png',
+    badge: './icons/icon-192.png',
+    tag: 'timer-end',
+    vibrate: [300, 100, 300],
+    silent: false,
+    requireInteraction: true,
+  });
+});
+
+// Clique na notificação: abre ou foca o app.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then((windowClients) => {
+      // Se já tiver uma janela aberta, foca ela
+      for (const client of windowClients) {
+        if (client.url.includes('/') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // Senão, abre uma nova
+      if (clients.openWindow) {
+        return clients.openWindow('./');
+      }
     })
   );
 });

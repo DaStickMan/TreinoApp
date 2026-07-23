@@ -286,9 +286,10 @@ async function renderTreinoView() {
     btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.descanso), { label: 'Descanso' }));
   });
 
-  // Cronômetro para exercícios de tempo (hold). Ao terminar, sugere descanso.
+  // Cronômetro para exercícios de tempo. Primeiro mostra 5s de preparação,
+  // depois inicia a contagem regressiva do exercício.
   $all('.btn-crono', el).forEach((btn) => {
-    btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.seg), { label: 'Exercício' }));
+    btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.seg), { label: 'Exercício', prep: true }));
   });
 
   // Entrada no dia de teste.
@@ -576,7 +577,7 @@ async function renderHistExercicio() {
 
   let conteudo;
   if (!linhas.length) {
-    conteudo = `<div class="card"><p class="muted">Sem registros para “${escapeHtml(HistState.exercicio)}” ainda.</p></div>`;
+    conteudo = `<div class="card"><p class="muted">Sem registros para "${escapeHtml(HistState.exercicio)}" ainda.</p></div>`;
   } else {
     const un = linhas[0].un;
     const graf = sparkline(linhas.map((l) => l.total));
@@ -681,7 +682,7 @@ async function renderDadosView() {
       <button id="btn-wipe" class="btn" style="background:var(--danger);color:#fff">🗑 Apagar todos os dados</button>
     </div>
 
-    <p class="muted center">Seus dados ficam só neste aparelho. “Limpar cache” do navegador não apaga; só “limpar dados do site” ou desinstalar.</p>
+    <p class="muted center">Seus dados ficam só neste aparelho. "Limpar cache" do navegador não apaga; só "limpar dados do site" ou desinstalar.</p>
   `;
 
   // Backup JSON
@@ -746,10 +747,85 @@ function setTopbarPhase(text) {
   $('#topbar-phase').textContent = text || '';
 }
 
+// ---------- notificador (Notification API + Service Worker) ----------
+// Exibe notificações mesmo quando o app está em background.
+const Notifier = {
+  _permission: false,
+  _timerEndInfo: null, // { endTime, label } para detectar timer perdido
+
+  async requestPermission() {
+    if (!('Notification' in window)) return false;
+    if (Notification.permission === 'granted') {
+      this._permission = true;
+      return true;
+    }
+    if (Notification.permission === 'denied') return false;
+    try {
+      const result = await Notification.requestPermission();
+      this._permission = result === 'granted';
+      return this._permission;
+    } catch (_) { return false; }
+  },
+
+  // Registra o fim esperado do timer para verificação ao voltar de background.
+  setTimerEnd(endTime, label) {
+    this._timerEndInfo = { endTime, label };
+  },
+
+  clearTimerEnd() {
+    this._timerEndInfo = null;
+  },
+
+  // Chamado quando o usuário volta ao app: se o timer já venceu, notifica.
+  // Usa _notified para evitar duplicar com _finish() que roda logo depois.
+  checkMissedTimer() {
+    const info = this._timerEndInfo;
+    if (!info) return;
+    if (info._notified) return;
+    if (Date.now() >= info.endTime) {
+      info._notified = true;
+      this.showNotification(
+        'Tempo encerrado!',
+        info.label ? `${info.label} finalizado.` : 'Timer finalizado.'
+      );
+    }
+  },
+
+  showNotification(title, body) {
+    if (!this._permission) return;
+    try {
+      // Tenta enviar pelo Service Worker (melhor integração com o sistema)
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: 'TIMER_END',
+          title,
+          body,
+        });
+      } else {
+        // Fallback: Notification API direta
+        const n = new Notification(title, {
+          body,
+          icon: './icons/icon-192.png',
+          vibrate: [300, 100, 300],
+        });
+        setTimeout(() => n.close(), 8000);
+      }
+    } catch (_) { /* silencioso */ }
+  },
+};
+
 // ---------- timer (descanso e exercícios de tempo) ----------
+// Usa Date.now() para contar o tempo, garantindo precisão mesmo quando o app
+// volta de background ou a tela é desbloqueada (setInterval é congelado pelo
+// navegador em segundo plano, mas o relógio do sistema não para).
 const RestTimer = {
   remaining: 0,
   interval: null,
+  endTime: null,       // timestamp-alvo (Date.now()) para fim da fase atual
+  isPrep: false,       // true = fase de preparação (antes do exercício)
+  prepNextSeconds: 0,  // duração do exercício após a preparação
+  prepNextLabel: '',   // label do exercício após a preparação
+  lastBeepSecond: -1,  // controle para não repetir bip no mesmo segundo
   el: null,
   timeEl: null,
   labelEl: null,
@@ -788,36 +864,110 @@ const RestTimer = {
   _paint() {
     this._refs();
     this.timeEl.textContent = this._fmt(Math.max(0, this.remaining));
-    this.timeEl.classList.toggle('ending', this.remaining <= 3 && this.remaining > 0);
+    const ending = this.remaining <= 3 && this.remaining > 0;
+    this.timeEl.classList.toggle('ending', ending);
+    // Destaque visual da fase de preparação
+    this.el.classList.toggle('prep', this.isPrep);
+    this.labelEl.classList.toggle('prep', this.isPrep);
   },
-  // seconds: duração; opts: { label, onEnd }
+
+  // Verifica e dispara beeps/vibração nos segundos 3, 2, 1
+  _checkBeep() {
+    if (this.remaining >= 1 && this.remaining <= 3 && this.lastBeepSecond !== this.remaining) {
+      this.lastBeepSecond = this.remaining;
+      this._beep(880, 0.18, 0.5);
+      this._vibrar(120);
+    }
+  },
+
+  // seconds: duração; opts: { label, onEnd, prep }
+  //   label — texto exibido durante o timer
+  //   onEnd — callback ao finalizar (não usado na transição prep→exercício)
+  //   prep  — se true, mostra 5s de "Preparação" antes do timer real
   start(seconds, opts = {}) {
     this._refs();
+    clearInterval(this.interval);
+    this.interval = null;
     this.onEnd = opts.onEnd || null;
-    this.labelEl.textContent = opts.label || 'Descanso';
-    this.remaining = Math.max(1, seconds | 0);
+    this.lastBeepSecond = -1;
+
+    if (opts.prep) {
+      // Fase de preparação: 5 segundos
+      this.isPrep = true;
+      this.prepNextSeconds = Math.max(1, seconds | 0);
+      this.prepNextLabel = opts.label || 'Exercício';
+      this.labelEl.textContent = 'Preparação';
+      this.endTime = Date.now() + 5000;
+      this.remaining = 5;
+    } else {
+      this.isPrep = false;
+      this.labelEl.textContent = opts.label || 'Descanso';
+      this.endTime = Date.now() + Math.max(1, seconds | 0) * 1000;
+      this.remaining = Math.max(1, seconds | 0);
+      // Registra no Notifier o fim do timer (para notificação em background)
+      Notifier.setTimerEnd(this.endTime, opts.label || 'Descanso');
+    }
+
     this.el.classList.remove('hidden');
     // "destrava" o áudio no gesto do usuário (necessário no Android).
     this._beep(0, 0.01, 0.0001);
     this._paint();
-    clearInterval(this.interval);
-    this.interval = setInterval(() => {
-      this.remaining -= 1;
-      this._paint();
-      // contagem sonora nos últimos 3 segundos (3, 2, 1)
-      if (this.remaining === 3 || this.remaining === 2 || this.remaining === 1) {
-        this._beep(880, 0.18, 0.5);
-        this._vibrar(120);
+    this.interval = setInterval(() => this._tick(), 200);
+  },
+
+  // Chamado a cada ~200ms. Recalcula o tempo real com Date.now().
+  _tick() {
+    const now = Date.now();
+    const newRemaining = Math.max(0, Math.ceil((this.endTime - now) / 1000));
+    this.remaining = newRemaining;
+    this._paint();
+
+    if (newRemaining <= 0) {
+      if (this.isPrep) {
+        // Preparação terminou → inicia o exercício automaticamente
+        this.isPrep = false;
+        this.labelEl.textContent = this.prepNextLabel;
+        this.endTime = Date.now() + this.prepNextSeconds * 1000;
+        this.remaining = this.prepNextSeconds;
+        this.lastBeepSecond = -1;
+        // Registra o fim real do exercício para notificação
+        Notifier.setTimerEnd(this.endTime, this.prepNextLabel);
+        this._paint();
+        // Bip de transição: mais longo para indicar "começou!"
+        this._beep(880, 0.25, 0.6);
+        this._vibrar(250);
+      } else {
+        this._finish();
       }
-      if (this.remaining <= 0) this._finish();
-    }, 1000);
+      return;
+    }
+
+    this._checkBeep();
   },
+
   add(delta) {
-    if (this.interval) { this.remaining = Math.max(1, this.remaining + delta); this._paint(); }
+    if (!this.interval) return;
+    // Durante a preparação, ignora ajustes manuais (não faz sentido adiantar
+    // ou atrasar a preparação).
+    if (this.isPrep) return;
+    const novo = Math.max(1, this.remaining + delta);
+    this.remaining = novo;
+    this.endTime = Date.now() + novo * 1000;
+    this._paint();
   },
+
   _finish() {
     clearInterval(this.interval);
     this.interval = null;
+    this.endTime = null;
+    // Marca como notificado antes de _finish rodar (evita duplicar via checkMissedTimer)
+    if (Notifier._timerEndInfo) Notifier._timerEndInfo._notified = true;
+    Notifier.clearTimerEnd();
+    // Notificação: avisa que o tempo acabou (mesmo em background via SW)
+    Notifier.showNotification(
+      'Tempo encerrado!',
+      (this.labelEl ? this.labelEl.textContent + ' finalizado.' : 'Timer finalizado.')
+    );
     // beep final: mais grave, mais longo e mais alto.
     this._beep(1320, 0.15, 0.6);
     setTimeout(() => this._beep(660, 0.55, 0.7), 120);
@@ -827,13 +977,18 @@ const RestTimer = {
     if (cb) { try { cb(); } catch (_) {} }
     setTimeout(() => this.stop(), 1200);
   },
+
   stop() {
     clearInterval(this.interval);
     this.interval = null;
     this.onEnd = null;
+    this.endTime = null;
+    this.isPrep = false;
+    Notifier.clearTimerEnd();
     this._refs();
     if (this.el) this.el.classList.add('hidden');
   },
+
   bindControls() {
     document.getElementById('rest-minus').addEventListener('click', () => this.add(-15));
     document.getElementById('rest-plus').addEventListener('click', () => this.add(15));
@@ -868,6 +1023,19 @@ async function init() {
   bindTabs();
   RestTimer.bindControls();
   registerSW();
+
+  // Pede permissão de notificação (não bloqueia o resto se negar)
+  Notifier.requestPermission().then((granted) => {
+    if (granted) console.log('Notificações permitidas');
+  });
+
+  // Monitora volta de background: se o timer venceu enquanto estava fora, notifica
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      Notifier.checkMissedTimer();
+    }
+  });
+
   try {
     await DB.ready;
     await DB.requestPersistence();   // reduz risco de despejo dos dados
