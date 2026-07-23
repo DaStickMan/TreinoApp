@@ -78,22 +78,18 @@ function unidade(tipoMedida) {
 }
 
 // ---------- sessão ativa ----------
-// Uma sessão é criada ao registrar a 1ª série. É retomada se o app fechar.
-// Chave estável de exercício dentro de um treino: bloco.tipo + '::' + nome.
 function exKey(bloco, ex) { return `${bloco.tipo}::${ex.nome}`; }
 
 async function getSessaoAtiva() {
   return await DB.getState('sessaoAtiva', null);
 }
 
-// Garante uma sessão ativa para (fase, treino). Se a ativa for de outro treino,
-// mantém assim mesmo (o usuário pode ter realocado); o id carrega fase+treino+ts.
 async function getOrCreateSessao(fase, treino) {
   let ativa = await getSessaoAtiva();
   if (ativa && ativa.treinoTipo === treino.tipo && ativa.faseId === fase.id) {
     return ativa;
   }
-  if (ativa) return ativa; // sessão de outro treino ainda aberta: reaproveita até concluir
+  if (ativa) return ativa;
   const nova = {
     id: `${treino.tipo}-${Date.now()}`,
     faseId: fase.id,
@@ -109,7 +105,6 @@ async function getOrCreateSessao(fase, treino) {
   return nova;
 }
 
-// Carrega as séries já registradas da sessão num mapa: { exKey: { serie: valor } }.
 async function carregarSetsMapa(sessionId) {
   const sets = await DB.getSetsBySession(sessionId);
   const mapa = {};
@@ -120,8 +115,6 @@ async function carregarSetsMapa(sessionId) {
   return mapa;
 }
 
-// ---------- lógica de fase / proximidade do teste ----------
-// Retorna { estado: 'longe'|'proximo'|'no_teste', restantes, teste }.
 async function statusTeste(fase) {
   const feitos = await DB.getState('treinosNaFase', 0);
   const alvo = fase.treinosParaTeste || 20;
@@ -129,7 +122,7 @@ async function statusTeste(fase) {
   const restantes = alvo - feitos;
   let estado = 'longe';
   if (restantes <= 0) estado = 'no_teste';
-  else if (restantes <= 1) estado = 'proximo'; // último treino antes do teste
+  else if (restantes <= 1) estado = 'proximo';
   return { estado, restantes, teste, feitos, alvo };
 }
 
@@ -153,7 +146,6 @@ async function renderTreinoView() {
   const setsMapa = await carregarSetsMapa(sessao.id);
   const st = await statusTeste(fase);
 
-  // Banner de proximidade / entrada no teste.
   let banner = '';
   if (st.estado === 'no_teste' && st.teste) {
     banner = `
@@ -170,7 +162,6 @@ async function renderTreinoView() {
       </div>`;
   }
 
-  // Seletor de treino (realocação manual): botões A/B/C.
   const seletor = App.plano.meta.rotacao.map((tp) => {
     const t = fase.treinos.find((x) => x.tipo === tp);
     const ativo = tp === tipoAtual ? ' active' : '';
@@ -190,7 +181,6 @@ async function renderTreinoView() {
         ? `<button class="btn-crono" data-seg="${ex.reps}">⏲ Cronometrar ${ex.reps}s</button>`
         : '';
 
-      // Um input por série prescrita. Placeholder = alvo (reps ou segundos).
       const seriesHtml = Array.from({ length: ex.series }, (_, i) => {
         const serie = i + 1;
         const reg = registradas[serie];
@@ -247,7 +237,6 @@ async function renderTreinoView() {
     <p class="muted center" style="margin-top:10px">Cada série é salva na hora. Faltou um dia? O próximo treino só avança quando você concluir.</p>
   `;
 
-  // Realocação manual.
   $all('.chip', el).forEach((chip) => {
     chip.addEventListener('click', async () => {
       const novoIdx = Rotacao.indicePorTipo(App.plano, chip.dataset.tipo);
@@ -255,7 +244,6 @@ async function renderTreinoView() {
     });
   });
 
-  // Registro por série: SALVAMENTO IMEDIATO a cada mudança.
   $all('.serie-input', el).forEach((input) => {
     input.addEventListener('change', async () => {
       const raw = input.value.trim();
@@ -272,7 +260,6 @@ async function renderTreinoView() {
         valor: raw === '' ? null : Number(raw),
         tipoMedida: input.dataset.medida,
       };
-      // upsert por (sessionId, exKey, serie): busca id existente.
       const existentes = await DB.getSetsBySession(s.id);
       const jaTem = existentes.find((x) => x.exKey === setRec.exKey && x.serie === setRec.serie);
       if (jaTem) setRec.id = jaTem.id;
@@ -281,22 +268,25 @@ async function renderTreinoView() {
     });
   });
 
-  // Timer de descanso por exercício.
+  // Timer de descanso: solicita permissão de notificação no clique (gesto do usuário)
   $all('.btn-rest', el).forEach((btn) => {
-    btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.descanso), { label: 'Descanso' }));
+    btn.addEventListener('click', () => {
+      Notifier.requestPermissionOnGesture();
+      RestTimer.start(Number(btn.dataset.descanso), { label: 'Descanso' });
+    });
   });
 
-  // Cronômetro para exercícios de tempo. Primeiro mostra 5s de preparação,
-  // depois inicia a contagem regressiva do exercício.
+  // Cronômetro de exercício: solicita permissão de notificação no clique (gesto do usuário)
   $all('.btn-crono', el).forEach((btn) => {
-    btn.addEventListener('click', () => RestTimer.start(Number(btn.dataset.seg), { label: 'Exercício', prep: true }));
+    btn.addEventListener('click', () => {
+      Notifier.requestPermissionOnGesture();
+      RestTimer.start(Number(btn.dataset.seg), { label: 'Exercício', prep: true });
+    });
   });
 
-  // Entrada no dia de teste.
   const btnTeste = $('#btn-ir-teste', el);
   if (btnTeste) btnTeste.addEventListener('click', () => renderTesteView(fase, st.teste));
 
-  // Concluir treino: finaliza a sessão e avança a rotação.
   $('#btn-concluir', el).addEventListener('click', async () => {
     const s = await getSessaoAtiva();
     if (s) {
@@ -358,14 +348,12 @@ async function renderTesteView(fase, teste) {
     <div id="teste-resultado"></div>
   `;
 
-  // guarda entradas em memória durante a avaliação
   const entradas = {};
 
   $all('.manual-btn', el).forEach((btn) => {
     btn.addEventListener('click', () => {
       const ordem = btn.dataset.ordem;
       entradas[ordem] = { aprovadoManual: btn.dataset.val === '1' };
-      // destaca seleção
       $all(`.manual-btn[data-ordem="${ordem}"]`, el).forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
     });
@@ -374,7 +362,6 @@ async function renderTesteView(fase, teste) {
   $('#btn-voltar-treino', el).addEventListener('click', () => renderTreinoView());
 
   $('#btn-avaliar', el).addEventListener('click', async () => {
-    // coleta inputs numéricos
     $all('.teste-input', el).forEach((inp) => {
       const v = inp.value.trim();
       entradas[inp.dataset.ordem] = { valor: v === '' ? null : Number(v) };
@@ -382,7 +369,6 @@ async function renderTesteView(fase, teste) {
     const avaliacao = TesteLogica.avaliar(teste, entradas);
     const decisao = TesteLogica.decidirTransicao(teste, avaliacao);
 
-    // pinta status por item
     avaliacao.itens.forEach((res) => {
       const card = $(`.teste-item[data-ordem="${res.ordem}"]`, el);
       const stEl = $('.teste-status', card);
@@ -390,7 +376,6 @@ async function renderTesteView(fase, teste) {
       stEl.className = 'teste-status ' + (res.aprovado ? 'ok-text' : 'danger-text');
     });
 
-    // salva resultado
     const resultados = await DB.getState('resultadosTestes', {});
     resultados[teste.id] = {
       testeId: teste.id, faseDe: teste.faseDe, fasePara: teste.fasePara,
@@ -400,7 +385,6 @@ async function renderTesteView(fase, teste) {
     };
     await DB.setState('resultadosTestes', resultados);
 
-    // bloco de decisão
     const box = $('#teste-resultado', el);
     let msg = '';
     if (decisao.motivo === 'aprovado') {
@@ -430,7 +414,6 @@ async function renderTesteView(fase, teste) {
   });
 }
 
-// Avança para a fase indicada: zera contador de treinos e a rotação segue de onde parou.
 async function avancarFase(novaFaseId) {
   await DB.setState('faseAtual', novaFaseId);
   await DB.setState('treinosNaFase', 0);
@@ -503,7 +486,6 @@ async function renderSessaoDetalhe(sessionId) {
   const box = $('#hist-conteudo');
   const s = await DB.getSession(sessionId);
   const sets = await DB.getSetsBySession(sessionId);
-  // agrupa por exercício (exKey), ordenando por série
   const grupos = {};
   sets.forEach((x) => {
     if (!grupos[x.exKey]) grupos[x.exKey] = { nome: x.exercicioNome, series: [] };
@@ -526,14 +508,12 @@ async function renderSessaoDetalhe(sessionId) {
   $('#btn-voltar-hist', box).addEventListener('click', () => { HistState.aba = 'sessoes'; renderHistoricoView(); });
 }
 
-// coleta todos os nomes de exercícios presentes no plano (ordenados).
 function todosExerciciosDoPlano() {
   const set = new Set();
   App.plano.fases.forEach((f) => f.treinos.forEach((t) => t.blocos.forEach((b) => b.exercicios.forEach((ex) => set.add(ex.nome)))));
   return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt'));
 }
 
-// mini-gráfico SVG de uma série de pontos (sem libs).
 function sparkline(pontos, w = 300, h = 80) {
   if (!pontos.length) return '';
   const max = Math.max(...pontos);
@@ -559,13 +539,11 @@ async function renderHistExercicio() {
   const options = nomes.map((n) => `<option value="${escapeHtml(n)}"${n === HistState.exercicio ? ' selected' : ''}>${escapeHtml(n)}</option>`).join('');
 
   const sets = (await DB.getSetsByExercicio(HistState.exercicio)).filter((x) => x.valor != null);
-  // agrupa por sessão, somando/registrando por data
   const porSessao = {};
   sets.forEach((x) => {
     if (!porSessao[x.sessionId]) porSessao[x.sessionId] = [];
     porSessao[x.sessionId].push(x);
   });
-  // ordena sessões pela data (usa o ts do 1º set como aproximação)
   const linhas = Object.entries(porSessao).map(([sid, arr]) => {
     arr.sort((a, b) => a.serie - b.serie);
     const ts = Math.min(...arr.map((a) => a.ts || 0));
@@ -685,7 +663,6 @@ async function renderDadosView() {
     <p class="muted center">Seus dados ficam só neste aparelho. "Limpar cache" do navegador não apaga; só "limpar dados do site" ou desinstalar.</p>
   `;
 
-  // Backup JSON
   $('#btn-export-json', el).addEventListener('click', async () => {
     const dump = await DB.exportAll();
     baixarArquivo(`treino-backup-${carimboArquivo()}.json`, JSON.stringify(dump, null, 2), 'application/json');
@@ -715,7 +692,6 @@ async function renderDadosView() {
     }
   });
 
-  // CSV treinos
   $('#btn-csv-treinos', el).addEventListener('click', async () => {
     const allSessions = await DB.getAllSessions();
     const dump = await DB.exportAll();
@@ -724,7 +700,6 @@ async function renderDadosView() {
     toast('CSV de treinos gerado.');
   });
 
-  // CSV testes
   $('#btn-csv-testes', el).addEventListener('click', async () => {
     const res = await DB.getState('resultadosTestes', {});
     const csv = Exportar.testesCSV(res, App.plano.testes);
@@ -732,7 +707,6 @@ async function renderDadosView() {
     toast('CSV de testes gerado.');
   });
 
-  // Apagar tudo
   $('#btn-wipe', el).addEventListener('click', async () => {
     if (!confirm('APAGAR todos os dados deste aparelho? Isso não pode ser desfeito.')) return;
     if (!confirm('Tem certeza mesmo? Faça um backup antes se não tiver.')) return;
@@ -749,17 +723,23 @@ function setTopbarPhase(text) {
 
 // ---------- notificador (Notification API + Service Worker) ----------
 // Exibe notificações mesmo quando o app está em background.
+// Importante: no Android, Notification.requestPermission() SÓ funciona
+// dentro de um gesto do usuário (clique/toque). Por isso pedimos permissão
+// nos handlers dos botões de timer, não no init().
 const Notifier = {
   _permission: false,
-  _timerEndInfo: null, // { endTime, label } para detectar timer perdido
+  _timerEndInfo: null, // { endTime, label } em memória
 
-  async requestPermission() {
+  // Solicita permissão. DEVE ser chamada dentro de um gesto do usuário (click).
+  async requestPermissionOnGesture() {
     if (!('Notification' in window)) return false;
+    if (this._permission) return true;
+    if (Notification.permission === 'denied') return false;
+    // Só tenta se ainda não tiver permissão ou se for 'default'
     if (Notification.permission === 'granted') {
       this._permission = true;
       return true;
     }
-    if (Notification.permission === 'denied') return false;
     try {
       const result = await Notification.requestPermission();
       this._permission = result === 'granted';
@@ -767,17 +747,37 @@ const Notifier = {
     } catch (_) { return false; }
   },
 
-  // Registra o fim esperado do timer para verificação ao voltar de background.
-  setTimerEnd(endTime, label) {
+  // Registra o fim esperado do timer na memória E no IndexedDB
+  async setTimerEnd(endTime, label) {
     this._timerEndInfo = { endTime, label };
+    // Persiste no IndexedDB para detectar timers perdidos mesmo após fechar o app
+    try { await DB.setState('timerEnd', { endTime, label }); } catch (_) {}
   },
 
-  clearTimerEnd() {
+  async clearTimerEnd() {
     this._timerEndInfo = null;
+    try { await DB.setState('timerEnd', null); } catch (_) {}
+  },
+
+  // Verifica se há um timer pendente no IndexedDB (para quando o app é reaberto)
+  async checkPendingTimer() {
+    try {
+      const pending = await DB.getState('timerEnd', null);
+      if (!pending || pending._notified) return;
+      // Sincroniza permissão: pode já ter sido concedida em sessão anterior
+      await this.requestPermissionOnGesture();
+      if (Date.now() >= pending.endTime) {
+        pending._notified = true;
+        this.showNotification(
+          'Tempo encerrado!',
+          pending.label ? `${pending.label} finalizado.` : 'Timer finalizado.'
+        );
+        await DB.setState('timerEnd', null);
+      }
+    } catch (_) {}
   },
 
   // Chamado quando o usuário volta ao app: se o timer já venceu, notifica.
-  // Usa _notified para evitar duplicar com _finish() que roda logo depois.
   checkMissedTimer() {
     const info = this._timerEndInfo;
     if (!info) return;
@@ -818,14 +818,21 @@ const Notifier = {
 // Usa Date.now() para contar o tempo, garantindo precisão mesmo quando o app
 // volta de background ou a tela é desbloqueada (setInterval é congelado pelo
 // navegador em segundo plano, mas o relógio do sistema não para).
+//
+// Screen Wake Lock: enquanto o timer estiver rodando, pede para a tela não
+// desligar. Assim o JavaScript continua executando normalmente. Se o usuário
+// travar a tela manualmente, o wake lock é liberado e o timer depende do
+// Date.now() + visibilitychange para se recuperar.
 const RestTimer = {
   remaining: 0,
   interval: null,
-  endTime: null,       // timestamp-alvo (Date.now()) para fim da fase atual
-  isPrep: false,       // true = fase de preparação (antes do exercício)
-  prepNextSeconds: 0,  // duração do exercício após a preparação
-  prepNextLabel: '',   // label do exercício após a preparação
-  lastBeepSecond: -1,  // controle para não repetir bip no mesmo segundo
+  endTime: null,
+  isPrep: false,
+  prepNextSeconds: 0,
+  prepNextLabel: '',
+  lastBeepSecond: -1,
+  _wakeLock: null,
+  _wakeLockTimerActive: false, // verdadeiro entre start() e stop()/_finish()
   el: null,
   timeEl: null,
   labelEl: null,
@@ -841,7 +848,6 @@ const RestTimer = {
     const r = s % 60;
     return `${String(m).padStart(2, '0')}:${String(r).padStart(2, '0')}`;
   },
-  // Toca um beep (Web Audio). vol 0..1. Reaproveita o AudioContext.
   _beep(freq, dur, vol) {
     try {
       if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -849,7 +855,7 @@ const RestTimer = {
       if (ctx.state === 'suspended') ctx.resume();
       const o = ctx.createOscillator();
       const g = ctx.createGain();
-      o.type = 'square'; // mais audível que senoide
+      o.type = 'square';
       o.frequency.value = freq;
       o.connect(g); g.connect(ctx.destination);
       const t = ctx.currentTime;
@@ -861,17 +867,42 @@ const RestTimer = {
   },
   _vibrar(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (_) {} },
 
+  // Screen Wake Lock: impede a tela de desligar
+  async _requestWakeLock() {
+    if (this._wakeLock) return; // já tem
+    try {
+      if (navigator.wakeLock && document.visibilityState === 'visible') {
+        this._wakeLock = await navigator.wakeLock.request('screen');
+        this._wakeLock.addEventListener('release', () => {
+          this._wakeLock = null;
+        });
+      }
+    } catch (_) { /* wake lock não suportado ou negado */ }
+  },
+
+  async _releaseWakeLock() {
+    if (this._wakeLock) {
+      try { await this._wakeLock.release(); } catch (_) {}
+      this._wakeLock = null;
+    }
+  },
+
+  // Re-adquire o wake lock quando o usuário volta ao app (se o timer ainda estiver ativo)
+  async _reacquireWakeLock() {
+    if (this._wakeLockTimerActive && document.visibilityState === 'visible') {
+      await this._requestWakeLock();
+    }
+  },
+
   _paint() {
     this._refs();
     this.timeEl.textContent = this._fmt(Math.max(0, this.remaining));
     const ending = this.remaining <= 3 && this.remaining > 0;
     this.timeEl.classList.toggle('ending', ending);
-    // Destaque visual da fase de preparação
     this.el.classList.toggle('prep', this.isPrep);
     this.labelEl.classList.toggle('prep', this.isPrep);
   },
 
-  // Verifica e dispara beeps/vibração nos segundos 3, 2, 1
   _checkBeep() {
     if (this.remaining >= 1 && this.remaining <= 3 && this.lastBeepSecond !== this.remaining) {
       this.lastBeepSecond = this.remaining;
@@ -880,10 +911,6 @@ const RestTimer = {
     }
   },
 
-  // seconds: duração; opts: { label, onEnd, prep }
-  //   label — texto exibido durante o timer
-  //   onEnd — callback ao finalizar (não usado na transição prep→exercício)
-  //   prep  — se true, mostra 5s de "Preparação" antes do timer real
   start(seconds, opts = {}) {
     this._refs();
     clearInterval(this.interval);
@@ -892,7 +919,6 @@ const RestTimer = {
     this.lastBeepSecond = -1;
 
     if (opts.prep) {
-      // Fase de preparação: 5 segundos
       this.isPrep = true;
       this.prepNextSeconds = Math.max(1, seconds | 0);
       this.prepNextLabel = opts.label || 'Exercício';
@@ -904,18 +930,20 @@ const RestTimer = {
       this.labelEl.textContent = opts.label || 'Descanso';
       this.endTime = Date.now() + Math.max(1, seconds | 0) * 1000;
       this.remaining = Math.max(1, seconds | 0);
-      // Registra no Notifier o fim do timer (para notificação em background)
       Notifier.setTimerEnd(this.endTime, opts.label || 'Descanso');
     }
 
     this.el.classList.remove('hidden');
-    // "destrava" o áudio no gesto do usuário (necessário no Android).
     this._beep(0, 0.01, 0.0001);
     this._paint();
+
+    // Wake lock: impede tela de desligar durante o timer
+    this._wakeLockTimerActive = true;
+    this._requestWakeLock();
+
     this.interval = setInterval(() => this._tick(), 200);
   },
 
-  // Chamado a cada ~200ms. Recalcula o tempo real com Date.now().
   _tick() {
     const now = Date.now();
     const newRemaining = Math.max(0, Math.ceil((this.endTime - now) / 1000));
@@ -924,16 +952,13 @@ const RestTimer = {
 
     if (newRemaining <= 0) {
       if (this.isPrep) {
-        // Preparação terminou → inicia o exercício automaticamente
         this.isPrep = false;
         this.labelEl.textContent = this.prepNextLabel;
         this.endTime = Date.now() + this.prepNextSeconds * 1000;
         this.remaining = this.prepNextSeconds;
         this.lastBeepSecond = -1;
-        // Registra o fim real do exercício para notificação
         Notifier.setTimerEnd(this.endTime, this.prepNextLabel);
         this._paint();
-        // Bip de transição: mais longo para indicar "começou!"
         this._beep(880, 0.25, 0.6);
         this._vibrar(250);
       } else {
@@ -947,8 +972,6 @@ const RestTimer = {
 
   add(delta) {
     if (!this.interval) return;
-    // Durante a preparação, ignora ajustes manuais (não faz sentido adiantar
-    // ou atrasar a preparação).
     if (this.isPrep) return;
     const novo = Math.max(1, this.remaining + delta);
     this.remaining = novo;
@@ -960,15 +983,17 @@ const RestTimer = {
     clearInterval(this.interval);
     this.interval = null;
     this.endTime = null;
-    // Marca como notificado antes de _finish rodar (evita duplicar via checkMissedTimer)
+    this._wakeLockTimerActive = false;
+    this._releaseWakeLock();
+
     if (Notifier._timerEndInfo) Notifier._timerEndInfo._notified = true;
     Notifier.clearTimerEnd();
-    // Notificação: avisa que o tempo acabou (mesmo em background via SW)
+
     Notifier.showNotification(
       'Tempo encerrado!',
       (this.labelEl ? this.labelEl.textContent + ' finalizado.' : 'Timer finalizado.')
     );
-    // beep final: mais grave, mais longo e mais alto.
+
     this._beep(1320, 0.15, 0.6);
     setTimeout(() => this._beep(660, 0.55, 0.7), 120);
     this._vibrar([300, 100, 300]);
@@ -984,6 +1009,8 @@ const RestTimer = {
     this.onEnd = null;
     this.endTime = null;
     this.isPrep = false;
+    this._wakeLockTimerActive = false;
+    this._releaseWakeLock();
     Notifier.clearTimerEnd();
     this._refs();
     if (this.el) this.el.classList.add('hidden');
@@ -1007,14 +1034,13 @@ function registerSW() {
 }
 
 // ---------- estado inicial ----------
-// Garante que o estado base exista na primeira abertura.
 async function ensureInitialState() {
   const fase = await DB.getState('faseAtual', null);
   if (fase === null) {
-    await DB.setState('faseAtual', 1);          // começa na Fase 1
-    await DB.setState('rotacaoIndex', 0);       // 0=A, 1=B, 2=C
-    await DB.setState('treinosNaFase', 0);      // treinos concluídos na fase atual
-    await DB.setState('resultadosTestes', {});  // { [testeId]: {...} }
+    await DB.setState('faseAtual', 1);
+    await DB.setState('rotacaoIndex', 0);
+    await DB.setState('treinosNaFase', 0);
+    await DB.setState('resultadosTestes', {});
   }
 }
 
@@ -1024,21 +1050,20 @@ async function init() {
   RestTimer.bindControls();
   registerSW();
 
-  // Pede permissão de notificação (não bloqueia o resto se negar)
-  Notifier.requestPermission().then((granted) => {
-    if (granted) console.log('Notificações permitidas');
-  });
+  // Verifica timer pendente do IndexedDB (se o app foi fechado e reaberto)
+  Notifier.checkPendingTimer();
 
-  // Monitora volta de background: se o timer venceu enquanto estava fora, notifica
+  // Monitora volta de background: re-adquire wake lock + notifica timer perdido
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
+      RestTimer._reacquireWakeLock();
       Notifier.checkMissedTimer();
     }
   });
 
   try {
     await DB.ready;
-    await DB.requestPersistence();   // reduz risco de despejo dos dados
+    await DB.requestPersistence();
     await ensureInitialState();
     await loadPlano();
     const faseId = await DB.getState('faseAtual', 1);
