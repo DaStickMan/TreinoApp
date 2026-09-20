@@ -833,8 +833,9 @@ const RestTimer = {
   lastBeepSecond: -1,
   _wakeLock: null,
   _wakeLockTimerActive: false, // verdadeiro entre start() e stop()/_finish()
-  _keepAliveOsc: null,
-  _keepAliveGain: null,
+  _keepAliveAudioEl: null,
+  _keepAliveAudioUrl: null,
+  totalSeconds: 0, // duração total da etapa atual (p/ barra de progresso da tela de bloqueio)
   el: null,
   timeEl: null,
   labelEl: null,
@@ -869,43 +870,110 @@ const RestTimer = {
   },
   _vibrar(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (_) {} },
 
-  // Áudio "quase inaudível" contínuo enquanto o timer roda.
+  // Áudio "quase inaudível" contínuo enquanto o timer roda, tocado via
+  // elemento <audio> (não Web Audio puro — veja motivo abaixo).
+  //
   // Necessário porque o Screen Wake Lock só evita a tela apagar: ao BLOQUEAR
   // manualmente o aparelho, o Chrome marca a página como "hidden" e, sem uma
   // exceção ativa, ela pode ser congelada (Page Lifecycle) em menos de 1 min,
   // parando o setInterval do timer e impedindo a notificação de disparar.
   // Reproduzir áudio real (mesmo em volume muito baixo) mantém a página
   // "audível" para o navegador, que é uma das exceções documentadas que
-  // evitam o congelamento em segundo plano — por isso timers curtos (<1 min)
-  // funcionavam e os mais longos não.
+  // evitam o congelamento em segundo plano.
+  //
+  // Usamos um <audio> (WAV curtíssimo em loop, gerado em memória) em vez de
+  // um oscilador Web Audio porque só playback via <audio>/<video> aciona o
+  // "audio focus" do Android — pré-requisito para o Chrome exibir o card de
+  // mídia (Media Session) na tela de bloqueio com o tempo restante do timer.
   _startKeepAliveAudio() {
     try {
-      if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const ctx = this.audioCtx;
-      if (ctx.state === 'suspended') ctx.resume();
-      if (this._keepAliveOsc) return; // já rodando
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = 'sine';
-      o.frequency.value = 20; // abaixo do limiar de audição humana
-      g.gain.value = 0.001; // praticamente inaudível, mas conta como "audível" p/ o navegador
-      o.connect(g); g.connect(ctx.destination);
-      o.start();
-      this._keepAliveOsc = o;
-      this._keepAliveGain = g;
-    } catch (_) { /* Web Audio não suportado */ }
+      if (this._keepAliveAudioEl) {
+        this._keepAliveAudioEl.play().catch(() => {});
+        return; // já rodando
+      }
+      if (!this._keepAliveAudioUrl) this._keepAliveAudioUrl = this._buildSilentWavUrl();
+      const audio = new Audio(this._keepAliveAudioUrl);
+      audio.loop = true;
+      audio.volume = 0.01; // praticamente inaudível
+      audio.play().catch(() => {});
+      this._keepAliveAudioEl = audio;
+    } catch (_) { /* Audio não suportado */ }
   },
 
   _stopKeepAliveAudio() {
-    if (this._keepAliveOsc) {
-      try { this._keepAliveOsc.stop(); } catch (_) {}
-      try { this._keepAliveOsc.disconnect(); } catch (_) {}
-      this._keepAliveOsc = null;
+    if (this._keepAliveAudioEl) {
+      try { this._keepAliveAudioEl.pause(); } catch (_) {}
+      this._keepAliveAudioEl = null;
     }
-    if (this._keepAliveGain) {
-      try { this._keepAliveGain.disconnect(); } catch (_) {}
-      this._keepAliveGain = null;
+    this._clearMediaSession();
+  },
+
+  // Gera um WAV de ~0.5s de silêncio (quase) como Blob URL, reutilizável em loop.
+  _buildSilentWavUrl() {
+    const sampleRate = 8000;
+    const durationSec = 0.5;
+    const numSamples = Math.floor(sampleRate * durationSec);
+    const buffer = new ArrayBuffer(44 + numSamples * 2);
+    const view = new DataView(buffer);
+    const writeStr = (offset, str) => {
+      for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+    };
+    writeStr(0, 'RIFF');
+    view.setUint32(4, 36 + numSamples * 2, true);
+    writeStr(8, 'WAVE');
+    writeStr(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM
+    view.setUint16(22, 1, true); // mono
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeStr(36, 'data');
+    view.setUint32(40, numSamples * 2, true);
+    // Amplitude baixíssima (quase silêncio) para não gerar tela em branco/erro em alguns players.
+    for (let i = 0; i < numSamples; i++) {
+      const sample = Math.round(Math.sin((i / sampleRate) * 440 * 2 * Math.PI) * 200);
+      view.setInt16(44 + i * 2, sample, true);
     }
+    const blob = new Blob([buffer], { type: 'audio/wav' });
+    return URL.createObjectURL(blob);
+  },
+
+  // ---------- Media Session (widget de mídia na tela de bloqueio) ----------
+  // Mostra o timer como um "player" na tela de bloqueio/notificações,
+  // com título, tempo decorrido e barra de progresso.
+  _setupMediaSession(label) {
+    if (!('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: label || 'Timer',
+        artist: 'Treino Calistenia',
+        artwork: [{ src: './icons/icon-192.png', sizes: '192x192', type: 'image/png' }],
+      });
+      navigator.mediaSession.setActionHandler('stop', () => this.stop());
+      navigator.mediaSession.setActionHandler('pause', () => this.stop());
+      navigator.mediaSession.playbackState = 'playing';
+    } catch (_) {}
+  },
+
+  _updateMediaSessionPosition() {
+    if (!('mediaSession' in navigator) || !navigator.mediaSession.setPositionState) return;
+    try {
+      const duration = Math.max(1, this.totalSeconds);
+      const position = Math.min(duration, Math.max(0, duration - this.remaining));
+      navigator.mediaSession.setPositionState({ duration, position, playbackRate: 1 });
+    } catch (_) {}
+  },
+
+  _clearMediaSession() {
+    if (!('mediaSession' in navigator)) return;
+    try {
+      navigator.mediaSession.playbackState = 'none';
+      navigator.mediaSession.metadata = null;
+      navigator.mediaSession.setActionHandler('stop', null);
+      navigator.mediaSession.setActionHandler('pause', null);
+    } catch (_) {}
   },
 
   // Screen Wake Lock: impede a tela de desligar
@@ -932,10 +1000,10 @@ const RestTimer = {
   async _reacquireWakeLock() {
     if (this._wakeLockTimerActive && document.visibilityState === 'visible') {
       await this._requestWakeLock();
-      // O AudioContext pode ter sido suspenso pelo sistema junto com a página;
-      // garante que o áudio de keep-alive volte a tocar se o timer ainda roda.
-      if (this._keepAliveOsc && this.audioCtx && this.audioCtx.state === 'suspended') {
-        try { this.audioCtx.resume(); } catch (_) {}
+      // O <audio> de keep-alive pode ter sido pausado pelo sistema junto com
+      // a página; garante que volte a tocar se o timer ainda roda.
+      if (this._keepAliveAudioEl && this._keepAliveAudioEl.paused) {
+        this._keepAliveAudioEl.play().catch(() => {});
       }
     }
   },
@@ -971,11 +1039,13 @@ const RestTimer = {
       this.labelEl.textContent = 'Preparação';
       this.endTime = Date.now() + 5000;
       this.remaining = 5;
+      this.totalSeconds = 5;
     } else {
       this.isPrep = false;
       this.labelEl.textContent = opts.label || 'Descanso';
       this.endTime = Date.now() + Math.max(1, seconds | 0) * 1000;
       this.remaining = Math.max(1, seconds | 0);
+      this.totalSeconds = this.remaining;
       Notifier.setTimerEnd(this.endTime, opts.label || 'Descanso');
     }
 
@@ -991,6 +1061,10 @@ const RestTimer = {
     // quando a tela for bloqueada (ver comentário em _startKeepAliveAudio).
     this._startKeepAliveAudio();
 
+    // "Widget" na tela de bloqueio: título + barra de progresso do timer.
+    this._setupMediaSession(this.labelEl.textContent);
+    this._updateMediaSessionPosition();
+
     this.interval = setInterval(() => this._tick(), 200);
   },
 
@@ -999,6 +1073,7 @@ const RestTimer = {
     const newRemaining = Math.max(0, Math.ceil((this.endTime - now) / 1000));
     this.remaining = newRemaining;
     this._paint();
+    this._updateMediaSessionPosition();
 
     if (newRemaining <= 0) {
       if (this.isPrep) {
@@ -1006,9 +1081,12 @@ const RestTimer = {
         this.labelEl.textContent = this.prepNextLabel;
         this.endTime = Date.now() + this.prepNextSeconds * 1000;
         this.remaining = this.prepNextSeconds;
+        this.totalSeconds = this.prepNextSeconds;
         this.lastBeepSecond = -1;
         Notifier.setTimerEnd(this.endTime, this.prepNextLabel);
         this._paint();
+        this._setupMediaSession(this.prepNextLabel);
+        this._updateMediaSessionPosition();
         this._beep(880, 0.25, 0.6);
         this._vibrar(250);
       } else {
@@ -1026,7 +1104,9 @@ const RestTimer = {
     const novo = Math.max(1, this.remaining + delta);
     this.remaining = novo;
     this.endTime = Date.now() + novo * 1000;
+    if (novo > this.totalSeconds) this.totalSeconds = novo;
     this._paint();
+    this._updateMediaSessionPosition();
   },
 
   _finish() {
