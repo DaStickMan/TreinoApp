@@ -833,6 +833,8 @@ const RestTimer = {
   lastBeepSecond: -1,
   _wakeLock: null,
   _wakeLockTimerActive: false, // verdadeiro entre start() e stop()/_finish()
+  _keepAliveOsc: null,
+  _keepAliveGain: null,
   el: null,
   timeEl: null,
   labelEl: null,
@@ -867,6 +869,45 @@ const RestTimer = {
   },
   _vibrar(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (_) {} },
 
+  // Áudio "quase inaudível" contínuo enquanto o timer roda.
+  // Necessário porque o Screen Wake Lock só evita a tela apagar: ao BLOQUEAR
+  // manualmente o aparelho, o Chrome marca a página como "hidden" e, sem uma
+  // exceção ativa, ela pode ser congelada (Page Lifecycle) em menos de 1 min,
+  // parando o setInterval do timer e impedindo a notificação de disparar.
+  // Reproduzir áudio real (mesmo em volume muito baixo) mantém a página
+  // "audível" para o navegador, que é uma das exceções documentadas que
+  // evitam o congelamento em segundo plano — por isso timers curtos (<1 min)
+  // funcionavam e os mais longos não.
+  _startKeepAliveAudio() {
+    try {
+      if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const ctx = this.audioCtx;
+      if (ctx.state === 'suspended') ctx.resume();
+      if (this._keepAliveOsc) return; // já rodando
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = 20; // abaixo do limiar de audição humana
+      g.gain.value = 0.001; // praticamente inaudível, mas conta como "audível" p/ o navegador
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      this._keepAliveOsc = o;
+      this._keepAliveGain = g;
+    } catch (_) { /* Web Audio não suportado */ }
+  },
+
+  _stopKeepAliveAudio() {
+    if (this._keepAliveOsc) {
+      try { this._keepAliveOsc.stop(); } catch (_) {}
+      try { this._keepAliveOsc.disconnect(); } catch (_) {}
+      this._keepAliveOsc = null;
+    }
+    if (this._keepAliveGain) {
+      try { this._keepAliveGain.disconnect(); } catch (_) {}
+      this._keepAliveGain = null;
+    }
+  },
+
   // Screen Wake Lock: impede a tela de desligar
   async _requestWakeLock() {
     if (this._wakeLock) return; // já tem
@@ -891,6 +932,11 @@ const RestTimer = {
   async _reacquireWakeLock() {
     if (this._wakeLockTimerActive && document.visibilityState === 'visible') {
       await this._requestWakeLock();
+      // O AudioContext pode ter sido suspenso pelo sistema junto com a página;
+      // garante que o áudio de keep-alive volte a tocar se o timer ainda roda.
+      if (this._keepAliveOsc && this.audioCtx && this.audioCtx.state === 'suspended') {
+        try { this.audioCtx.resume(); } catch (_) {}
+      }
     }
   },
 
@@ -941,6 +987,10 @@ const RestTimer = {
     this._wakeLockTimerActive = true;
     this._requestWakeLock();
 
+    // Mantém a página "audível" para o navegador não congelar o timer
+    // quando a tela for bloqueada (ver comentário em _startKeepAliveAudio).
+    this._startKeepAliveAudio();
+
     this.interval = setInterval(() => this._tick(), 200);
   },
 
@@ -985,6 +1035,7 @@ const RestTimer = {
     this.endTime = null;
     this._wakeLockTimerActive = false;
     this._releaseWakeLock();
+    this._stopKeepAliveAudio();
 
     if (Notifier._timerEndInfo) Notifier._timerEndInfo._notified = true;
     Notifier.clearTimerEnd();
@@ -1011,6 +1062,7 @@ const RestTimer = {
     this.isPrep = false;
     this._wakeLockTimerActive = false;
     this._releaseWakeLock();
+    this._stopKeepAliveAudio();
     Notifier.clearTimerEnd();
     this._refs();
     if (this.el) this.el.classList.add('hidden');
